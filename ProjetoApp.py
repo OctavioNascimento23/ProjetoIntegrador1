@@ -1,7 +1,14 @@
-# executar no terminal: pip install tabulate
-
 from tabulate import tabulate
 import time
+import mysql.connector
+
+# CONEXÃO COM O BANCO DE DADOS
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    database="projetointegrador1"
+)
+print(db)
 
 CP = float(input("Digite o custo do produto: ")) # CUSTO PRODUTO
 CF = float(input("Digite o custo fixo do produto: ")) # CUSTO FIXO
@@ -40,6 +47,15 @@ else:
     print("ERRO, TENTE NOVAMENTE!")
 print()
 
-time.sleep(10)
+# TESTES COM BANCO DE DADOS
+cursor = db.cursor()
+cursor.execute("SELECT * FROM produto") # QUERY 
+resultados = cursor.fetchall()
+for resultado in resultados:
+    print(resultado) # EXIBE O RESULTADO DO QUERY
+    print()
 
 print("O programa irá encerrar em 10 segundos.")
+
+time.sleep(10)
+
