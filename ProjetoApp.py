@@ -1,7 +1,7 @@
 # executar no terminal: pip install tabulate
 
 from tabulate import tabulate
-import time # Biblioteca ainda não usada
+import time
 
 CP = float(input("Digite o custo do produto: ")) # CUSTO PRODUTO
 CF = float(input("Digite o custo fixo do produto: ")) # CUSTO FIXO
@@ -39,4 +39,7 @@ elif ((RT/PV)*100)<0:
 else:
     print("ERRO, TENTE NOVAMENTE!")
 print()
+
+time.sleep(10)
+
 print("O programa irá encerrar em 10 segundos.")
