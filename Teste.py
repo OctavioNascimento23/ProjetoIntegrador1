@@ -13,10 +13,11 @@ print(db)
 
 # TESTES COM BANCO DE DADOS
 cursor = db.cursor()
+queryProdutos = "SELECT nomeProduto FROM produto"
 cursor.execute("SELECT nomeProduto FROM produto")  # QUERY 
 resultados = cursor.fetchall()
 for resultado in resultados:
-    print(resultado)  # EXIBE O RESULTADO DO QUERY
+    print(resultado)  # EXIBE OS RESULTADOS DO QUERY
     print()
 
 def decisao_sim_nao(questao):
@@ -29,10 +30,13 @@ def decisao_sim_nao(questao):
 
 def visualizarProdutos():
     cursor.execute("SELECT * FROM produto")  # QUERY 
-    resultados = cursor.fetchall()
-    for resultado in resultados:
-        print(resultado)  # EXIBE O RESULTADO DO QUERY
-        print()
+    resultados = cursor.fetchall()  # Obtendo todos os resultados
+
+    # Definindo os cabeçalhos das colunas (dependendo da estrutura da tabela)
+    CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Quantidade", "Custo de aquisição", "Imposto sobre produto", "Custo fixo", "Comissão", "Rentabilidade"] 
+
+    # Exibindo os resultados em formato tabular
+    print(tabulate(resultados, headers=CabecalhoProdutos, tablefmt="grid"))
 
 # Adicione a função de calculadora de preços
 def calculadoraPreco():
@@ -62,10 +66,12 @@ def gerarTabelaResultado(PV, CA, RB, OC, RT, CF, CV, IV):
     ]
 
     print("\n\nTABELA DE RESULTADOS:")
+    print()
     print(tabulate(tabelaResultados, headers=["Descrição", "Porcentagem", "Valor"]))
 
 def gerarRentabilidade(RT, PV):
     print("\n\nCLASSIFICAÇÃO DE RENTABILIDADE:")
+    print()
     rentabilidade = (RT / PV) * 100
     
     if rentabilidade > 20:
@@ -81,10 +87,15 @@ def gerarRentabilidade(RT, PV):
     
     print()
 
+def adicionarProduto():
+    a
+
 def menu():
     while True:  # Mantém o menu em loop para permitir várias seleções
-        print("-- MENU do Controle de Estoque --")
+        print("MENU do Controle de Estoque")
+        print()
         print("Selecione uma função para prosseguir:")
+        print()
         
         tabelaFuncoes = [
             ["1. ", "Visualizar produtos"],
@@ -92,16 +103,15 @@ def menu():
             ["3. ", "Calcular preços"],
             ["4. ", "Sair"],  # Opção para sair do loop
         ]
-        print(tabulate(tabelaFuncoes, headers=["Entrada:", "Função:"]))
-
+        print(tabulate(tabelaFuncoes, headers=["Entrada", "Função"]))
         print()
 
         opc = int(input("Selecione a função a ser executada: "))
-
+        print()
         if opc == 1:
             visualizarProdutos()
         elif opc == 2:
-            print("Adicionar produtos ainda não está implementado.")
+            adicionarProduto()
         elif opc == 3:
             CA, CF, CV, IV, ML, PV, RB, OC, RT = calculadoraPreco()
 
@@ -109,8 +119,8 @@ def menu():
             resposta = decisao_sim_nao(question)  # Captura a resposta
 
             if resposta:
-                gerarTabelaResultado(PV, CA, RB, OC, RT, CF, CV, IV)  # Passe os argumentos corretos
-                gerarRentabilidade(RT, PV)  # Passe as variáveis certas
+                gerarTabelaResultado(PV, CA, RB, OC, RT, CF, CV, IV) 
+                gerarRentabilidade(RT, PV) 
             else:
                 print("A função de exibição de resultados não será executada.")
         elif opc == 4:
@@ -118,6 +128,13 @@ def menu():
             time.sleep(10)
             break  # Sai do loop e encerra o programa
         
-        print()  # Adiciona um espaço para melhor formatação do menu
+        print()
+        input("Digite -Enter- para voltar ao início: ")
+        #print("\033c", end='') apaga o código
+        print()
+        print("########################") # Melhor formatação do menu
+        print("######## INÍCIO ########") # Melhor formatação do menu
+        print("########################") # Melhor formatação do menu
+        print()
 
 menu()
