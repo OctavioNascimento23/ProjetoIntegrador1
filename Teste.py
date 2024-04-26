@@ -7,38 +7,68 @@ from Color_Console import *
 db = mysql.connector.connect(
     host="localhost",
     user="root",
-    database="projetointegrador1"
+    database="projetointegrador1" # Nome do BD
 )
 print(db)
 
 # TESTES COM BANCO DE DADOS
 cursor = db.cursor()
 queryProdutos = "SELECT nomeProduto FROM produto"
-cursor.execute("SELECT nomeProduto FROM produto")  # QUERY 
+cursor.execute("SELECT nomeProduto FROM produto")  # Query 
 resultados = cursor.fetchall()
 for resultado in resultados:
-    print(resultado)  # EXIBE OS RESULTADOS DO QUERY
+    print(resultado)  # Exibindo o query
     print()
 
 def decisao_sim_nao(questao):
     while True:
         resposta = input(f"{questao} (S/N): ").strip().lower()
         if resposta in ["s", "n"]:
-            return resposta == "s"
+            return resposta == "s" # Enquanto aqui tiver "SIM" o loop será True
         else:
             print("Resposta inválida. Por favor, responda com 'S' ou 'N'.")
 
-def visualizarProdutos():
-    cursor.execute("SELECT * FROM produto")  # QUERY 
+def visualizarProdutos(cursor):
+    cursor.execute("SELECT * FROM produto")  # Query 
     resultados = cursor.fetchall()  # Obtendo todos os resultados
 
-    # Definindo os cabeçalhos das colunas (dependendo da estrutura da tabela)
+    # Cabeçalho para tabela de visualização de produtinhos
     CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Quantidade", "Custo de aquisição", "Imposto sobre produto", "Custo fixo", "Comissão", "Rentabilidade"] 
 
-    # Exibindo os resultados em formato tabular
+    # Tabulando dados do BD
+    print("\n\nTABELA DE PRODUTOS:")
+    print()
     print(tabulate(resultados, headers=CabecalhoProdutos, tablefmt="grid"))
 
-# Adicione a função de calculadora de preços
+    cursor.execute("SELECT idProduto, nomeProduto, precoProduto, impostoProduto, custoProduto, custoFixo, comissaoVendas, rentabilidadeProduto FROM produto")
+    produtos = cursor.fetchall()
+
+    DecisaoTabelaProduto = "Deseja exibir os cálculos para os produtos?"
+    resposta = decisao_sim_nao(DecisaoTabelaProduto)
+    if resposta:
+
+        for produto in produtos:
+
+            idProduto, nomeProduto, PV, IV, CA, CF, CV, ML = produto
+            
+            # Calcular preço de venda e rentabilidade usando a função calculadoraPreco
+
+            PV = CA / (1 - (CF + CV + IV + ML) / 100)  # PREÇO DE VENDA
+            RB = PV - CA  # RECEITA BRUTA
+            OC = PV * (CF + CV + IV) / 100  # OUTROS CUSTOS (CF + CV + IV)
+            RT = RB - OC  # RENTABILIDADE
+
+            # Informações do produto
+            print(f"Produto: {nomeProduto}")
+            print(f"ID do Produto: {idProduto}")
+
+            # Gerar tabela de resultados
+            gerarTabelaResultado(PV, CA, RB, OC, RT, CF, CV, IV)
+
+            # Gerar classificação de rentabilidade
+            gerarRentabilidade(RT, PV)
+
+
 def calculadoraPreco():
     CA = float(input("Digite o custo do produto: "))  # CUSTO AQUISIÇÃO
     CF = float(input("Digite o custo fixo do produto: "))  # CUSTO FIXO
@@ -50,7 +80,7 @@ def calculadoraPreco():
     OC = PV * (CF + CV + IV) / 100  # OUTROS CUSTOS (CF + CV + IV)
     RT = RB - OC  # RENTABILIDADE
 
-    # Retorne todas as variáveis importantes para uso posterior
+    # Retornando para usar nas próximas funções. 
     return CA, CF, CV, IV, ML, PV, RB, OC, RT
 
 def gerarTabelaResultado(PV, CA, RB, OC, RT, CF, CV, IV):
@@ -88,10 +118,10 @@ def gerarRentabilidade(RT, PV):
     print()
 
 def adicionarProduto():
-    a
+    print("Em breve")
 
 def menu():
-    while True:  # Mantém o menu em loop para permitir várias seleções
+    while True: 
         print("MENU do Controle de Estoque")
         print()
         print("Selecione uma função para prosseguir:")
@@ -101,7 +131,7 @@ def menu():
             ["1. ", "Visualizar produtos"],
             ["2. ", "Adicionar produtos"],
             ["3. ", "Calcular preços"],
-            ["4. ", "Sair"],  # Opção para sair do loop
+            ["4. ", "Sair"],  
         ]
         print(tabulate(tabelaFuncoes, headers=["Entrada", "Função"]))
         print()
@@ -109,14 +139,14 @@ def menu():
         opc = int(input("Selecione a função a ser executada: "))
         print()
         if opc == 1:
-            visualizarProdutos()
+            visualizarProdutos(cursor)
         elif opc == 2:
             adicionarProduto()
         elif opc == 3:
             CA, CF, CV, IV, ML, PV, RB, OC, RT = calculadoraPreco()
 
-            question = "Deseja exibir os resultados?"
-            resposta = decisao_sim_nao(question)  # Captura a resposta
+            DecisaoExibirTabela = "Deseja exibir os resultados?"
+            resposta = decisao_sim_nao(DecisaoExibirTabela) 
 
             if resposta:
                 gerarTabelaResultado(PV, CA, RB, OC, RT, CF, CV, IV) 
@@ -129,7 +159,7 @@ def menu():
             break  # Sai do loop e encerra o programa
         
         print()
-        input("Digite -Enter- para voltar ao início: ")
+        input("Aperte -Enter- para voltar ao início: ")
         #print("\033c", end='') apaga o código
         print()
         print("########################") # Melhor formatação do menu
