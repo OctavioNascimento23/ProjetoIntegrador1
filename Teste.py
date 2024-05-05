@@ -33,7 +33,7 @@ def visualizarProdutos(cursor):
     resultados = cursor.fetchall()  # Obtendo todos os resultados
 
     # Cabeçalho para tabela de visualização de produtinhos
-    CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Quantidade", "Custo de aquisição", "Imposto sobre produto", "Custo fixo", "Comissão", "Rentabilidade"] 
+    CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Custo de aquisição", "Imposto sobre produto", "Custo fixo", "Comissão", "Rentabilidade"] 
 
     # Tabulando dados do BD
     print("\n\nTABELA DE PRODUTOS:")
@@ -116,9 +116,59 @@ def gerarRentabilidade(RT, PV):
         print("Prejuízo")
     
     print()
-
+    
 def adicionarProduto():
-    print("Em breve")
+    cod=int(input("Digite o código do produto: "))
+    nome=input("Digite o nome do produto: ")
+    descricao=input("Digite a descrição do produto: ")
+    PR=float(input("Digite o preço do produto: "))
+    IV = float(input("Digite os impostos do produto: "))  # IMPOSTOS SOBRE PRODUTO
+    CA=float(input("Digite o custo do produto: "))
+    CF = float(input("Digite o custo fixo do produto: "))  # CUSTO FIXO
+    CV = float(input("Digite a comissão de vendas do produto: "))  # COMISSÃO DE VENDAS
+    ML = float(input("Digite a margem de lucro do produto: "))  # MARGEM DE LUCRO
+
+    query = "INSERT INTO produto (idProduto, nomeProduto, descProduto, precoProduto,impostoProduto,custoProduto, custoFixo, comissaoVendas, rentabilidadeProduto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)"
+    values = (cod, nome, descricao,PR,IV,CA, CF, CV, ML)
+
+    try:
+        cursor.execute(query, values)
+        db.commit()  # Confirmar a transação no banco de dados
+        print("Produto adicionado com sucesso!")
+    except mysql.connector.Error as err:
+        print("Erro ao adicionar o produto:", err)
+
+def excluirProduto():
+    cod = int(input("Digite o código do produto a ser excluído: "))
+
+    cursor.execute("SELECT * FROM produto WHERE idProduto = %s", (cod,))
+    produto = cursor.fetchone()
+
+    if produto:
+        idProduto, nomeProduto, descricaoProduto, precoProduto, impostoProduto, custoProduto, custoFixo, comissaoVendas, rentabilidadeProduto = produto
+
+        print("\nProduto encontrado:")
+        print(f"ID: {idProduto}")
+        print(f"Nome: {nomeProduto}")
+        print(f"Descrição: {descricaoProduto}")
+        print(f"Preço: R${precoProduto}")
+        print(f"Imposto: {impostoProduto}%")
+        print(f"Custo: R${custoProduto}")
+        print(f"Custo Fixo: {custoFixo}%")
+        print(f"Comissão de Vendas: {comissaoVendas}%")
+        print(f"Rentabilidade: {rentabilidadeProduto}%")
+           
+        questao = input("Deseja mesmo excluir o produto? (S/N): ").strip().lower()
+        if questao=='s':
+            cursor.execute("DELETE FROM produto WHERE idProduto = %s", (cod,))
+            db.commit()
+            print("Produto excluído com sucesso!")
+        else:
+            print("Exclusão cancelada.")
+    else:
+        print("Produto não encontrado.")
+
+    
 
 def menu():
     while True: 
@@ -131,7 +181,9 @@ def menu():
             ["1. ", "Visualizar produtos"],
             ["2. ", "Adicionar produtos"],
             ["3. ", "Calcular preços"],
-            ["4. ", "Sair"],  
+            ["4. ","Alterar produto"],
+            ["5. ","Excluir produto"],
+            ["6. ","Sair"],  
         ]
         print(tabulate(tabelaFuncoes, headers=["Entrada", "Função"]))
         print()
@@ -153,7 +205,14 @@ def menu():
                 gerarRentabilidade(RT, PV) 
             else:
                 print("A função de exibição de resultados não será executada.")
-        elif opc == 4:
+
+        elif opc==4:
+            print("Em breve")
+
+        elif opc==5:
+            excluirProduto()
+
+        elif opc == 6:
             print("O programa encerrará em 10 segundos.")
             time.sleep(10)
             break  # Sai do loop e encerra o programa
