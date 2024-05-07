@@ -13,12 +13,6 @@ print(db)
 
 # TESTES COM BANCO DE DADOS
 cursor = db.cursor()
-queryProdutos = "SELECT nomeProduto FROM produto"
-cursor.execute("SELECT nomeProduto FROM produto")  # Query 
-resultados = cursor.fetchall()
-for resultado in resultados:
-    print(resultado)  # Exibindo o query
-    print()
 
 def decisao_sim_nao(questao):
     while True:
@@ -33,14 +27,18 @@ def visualizarProdutos(cursor):
     resultados = cursor.fetchall()  # Obtendo todos os resultados
 
     # Cabeçalho para tabela de visualização de produtinhos
+<<<<<<< Updated upstream
     CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Custo de aquisição", "Imposto sobre produto", "Custo fixo", "Comissão", "Rentabilidade"] 
+=======
+    CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Quantidade", "Preço de Venda", "Imposto sobre produto", "Custo de aquisição", "Custo fixo", "Comissão", "Rentabilidade"] 
+>>>>>>> Stashed changes
 
     # Tabulando dados do BD
     print("\n\nTABELA DE PRODUTOS:")
     print()
     print(tabulate(resultados, headers=CabecalhoProdutos, tablefmt="grid"))
 
-    cursor.execute("SELECT idProduto, nomeProduto, precoProduto, impostoProduto, custoProduto, custoFixo, comissaoVendas, rentabilidadeProduto FROM produto")
+    cursor.execute("SELECT idProduto, nomeProduto, precoVenda, impostoProduto, custoProduto, custoFixo, comissaoVendas, rentabilidadeProduto FROM produto")
     produtos = cursor.fetchall()
 
     DecisaoTabelaProduto = "Deseja exibir os cálculos para os produtos?"
@@ -58,16 +56,19 @@ def visualizarProdutos(cursor):
             OC = PV * (CF + CV + IV) / 100  # OUTROS CUSTOS (CF + CV + IV)
             RT = RB - OC  # RENTABILIDADE
 
+            print()
+            print("========================================")
+            print()
+
             # Informações do produto
             print(f"Produto: {nomeProduto}")
             print(f"ID do Produto: {idProduto}")
 
             # Gerar tabela de resultados
-            gerarTabelaResultado(PV, CA, RB, OC, RT, CF, CV, IV)
+            gerarTabelaResultado(PV, CA, OC, RT, CF, CV, IV)
 
             # Gerar classificação de rentabilidade
             gerarRentabilidade(RT, PV)
-
 
 def calculadoraPreco():
     CA = float(input("Digite o custo do produto: "))  # CUSTO AQUISIÇÃO
@@ -83,17 +84,16 @@ def calculadoraPreco():
     # Retornando para usar nas próximas funções. 
     return CA, CF, CV, IV, ML, PV, RB, OC, RT
 
-def gerarTabelaResultado(PV, CA, RB, OC, RT, CF, CV, IV):
+def gerarTabelaResultado(PV, CA, OC, RT, CF, CV, IV):
     tabelaResultados = [
-        ["A. Preço de Venda", f"R${round(PV,2)}", "100.0%"],
-        ["B. Custo de aquisição", f"R${round(CA,2)}", f"{round(CA / PV * 100,3)}%"],
-        ["C. Receita Bruta", f"R${round(PV - CA,2)}", f"{round((PV - CA) / PV * 100,3)}%"],
-        ["D. Custo Fixo/Administrativo", f"{round(CF,3)}%", f"{round(CF * PV / 100,2)}"],
-        ["E. Comissão de Vendas", f"{round(CV,3)}%", f"{round(CV * PV / 100,2)}"],
-        ["F. Impostos", f"{round(IV,3)}%", f"{round(IV * PV / 100,2)}"],
-        ["G. Outros Custos", f"{round(OC / PV * 100,3)}%", f"{round(OC,2)}"],
-        ["H. Rentabilidade", f"{round(RT / PV * 100,3)}%", f"{round(RT,2)}"],
-    ]
+       ["A. Preço de Venda",f"R${round(PV,2)}","100.0%"],
+            ["B. Custo de aquisição",f"R${round(CA,2)}",f"{round(CA/PV*100,3)}"+"%"],
+            ["C. Receita Bruta",f"R${round(PV-CA,2)}",f"{round((PV-CA)/PV*100,3)}"+"%"],
+            ["D. Custo Fixo/Administrativo",f"R${round(CF*PV/100,2)}",f"{round(CF,3)}"+"%"],
+            ["E. Comissão de Vendas",f"R${round(CV*PV/100,2)}",f"{round(CV,3)}"+"%"],
+            ["F. Impostos",f"R${round(IV*PV/100,2)}",f"{round(IV,3)}"+"%"],
+            ["G. Outros Custos",f"R${round(OC,2)}",f"{round(OC/PV*100,3)}"+"%"],
+            ["H. Rentabilidade",f"R${round(RT,2)}",f"{round(RT/PV*100,3)}"+"%"]]
 
     print("\n\nTABELA DE RESULTADOS:")
     print()
@@ -105,15 +105,15 @@ def gerarRentabilidade(RT, PV):
     rentabilidade = (RT / PV) * 100
     
     if rentabilidade > 20:
-        print(f"Rentabilidade alta, com uma porcentagem de lucro de {rentabilidade:.2f}%")
+        print(f"Rentabilidade alta, com uma porcentagem de lucro de {rentabilidade}%")
     elif 10 < rentabilidade <= 20:
-        print(f"Rentabilidade média, com uma porcentagem de lucro de {rentabilidade:.2f}%")
+        print(f"Rentabilidade média, com uma porcentagem de lucro de {rentabilidade}%")
     elif 0 < rentabilidade <= 10:
-        print(f"Rentabilidade baixa, com uma porcentagem de lucro de {rentabilidade:.2f}%")
+        print(f"Rentabilidade baixa, com uma porcentagem de lucro de {rentabilidade}%")
     elif rentabilidade == 0:
         print("Sem lucro")
     elif rentabilidade < 0:
-        print("Prejuízo")
+        print(f"Prejuízo de {rentabilidade}%")
     
     print()
     
@@ -170,6 +170,12 @@ def excluirProduto():
 
     
 
+def atualizarProduto():
+    print("Em breve")
+
+def deletarProduto():
+    print("Em breve")
+
 def menu():
     while True: 
         print("MENU do Controle de Estoque")
@@ -180,10 +186,17 @@ def menu():
         tabelaFuncoes = [
             ["1. ", "Visualizar produtos"],
             ["2. ", "Adicionar produtos"],
+<<<<<<< Updated upstream
             ["3. ", "Calcular preços"],
             ["4. ","Alterar produto"],
             ["5. ","Excluir produto"],
             ["6. ","Sair"],  
+=======
+            ["3. ", "Atualizar produtos"],
+            ["4. ", "Deletar produtos"],
+            ["5. ", "Calcular preços"],
+            ["6. ", "Sair"],  
+>>>>>>> Stashed changes
         ]
         print(tabulate(tabelaFuncoes, headers=["Entrada", "Função"]))
         print()
@@ -195,16 +208,21 @@ def menu():
         elif opc == 2:
             adicionarProduto()
         elif opc == 3:
+            atualizarProduto()
+        elif opc == 4:
+            deletarProduto()
+        elif opc == 5:
             CA, CF, CV, IV, ML, PV, RB, OC, RT = calculadoraPreco()
 
             DecisaoExibirTabela = "Deseja exibir os resultados?"
             resposta = decisao_sim_nao(DecisaoExibirTabela) 
 
             if resposta:
-                gerarTabelaResultado(PV, CA, RB, OC, RT, CF, CV, IV) 
+                gerarTabelaResultado(PV, CA, OC, RT, CF, CV, IV) 
                 gerarRentabilidade(RT, PV) 
             else:
                 print("A função de exibição de resultados não será executada.")
+<<<<<<< Updated upstream
 
         elif opc==4:
             print("Em breve")
@@ -212,6 +230,8 @@ def menu():
         elif opc==5:
             excluirProduto()
 
+=======
+>>>>>>> Stashed changes
         elif opc == 6:
             print("O programa encerrará em 10 segundos.")
             time.sleep(10)
