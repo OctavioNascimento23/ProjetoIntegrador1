@@ -23,18 +23,18 @@ def decisao_sim_nao(questao):
             print("Resposta inválida. Por favor, responda com 'S' ou 'N'.")
 
 def visualizarProdutos(cursor):
-    cursor.execute("SELECT * FROM produto")  # Query 
+    cursor.execute("SELECT `idProduto`, `nomeProduto`, `precoVenda`, `descProduto`, `custoAquisicao`, `impostoProduto`, `custoFixo`, `comissaoVendas`, `rentabilidadeProduto` FROM `produto`")  # Query 
     resultados = cursor.fetchall()  # Obtendo todos os resultados
 
     # Cabeçalho para tabela de visualização de produtinhos
-    CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Custo de aquisição", "Imposto sobre produto", "Custo fixo", "Comissão", "Rentabilidade"] 
+    CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Preço de Venda", "Imposto sobre produto", "Custo de aquisição", "Custo fixo", "Comissão", "Rentabilidade"] 
 
     # Tabulando dados do BD
     print("\n\nTABELA DE PRODUTOS:")
     print()
     print(tabulate(resultados, headers=CabecalhoProdutos, tablefmt="grid"))
 
-    cursor.execute("SELECT idProduto, nomeProduto, precoVenda, impostoProduto, custoProduto, custoFixo, comissaoVendas, rentabilidadeProduto FROM produto")
+    cursor.execute("SELECT idProduto, nomeProduto, precoVenda, impostoProduto, custoAquisicao, custoFixo, comissaoVendas, rentabilidadeProduto FROM produto")
     produtos = cursor.fetchall()
 
     DecisaoTabelaProduto = "Deseja exibir os cálculos para os produtos?"
@@ -117,15 +117,14 @@ def adicionarProduto():
     cod=int(input("Digite o código do produto: "))
     nome=input("Digite o nome do produto: ")
     descricao=input("Digite a descrição do produto: ")
-    PR=float(input("Digite o preço do produto: "))
-    IV = float(input("Digite os impostos do produto: "))  # IMPOSTOS SOBRE PRODUTO
-    CA=float(input("Digite o custo do produto: "))
-    CF = float(input("Digite o custo fixo do produto: "))  # CUSTO FIXO
-    CV = float(input("Digite a comissão de vendas do produto: "))  # COMISSÃO DE VENDAS
-    ML = float(input("Digite a margem de lucro do produto: "))  # MARGEM DE LUCRO
+    CA=float(input("Digite o custo de aquisição (R$): "))
+    IV = float(input("Digite os impostos do produto (%): "))  # IMPOSTOS SOBRE PRODUTO
+    CF = float(input("Digite o custo fixo do produto (%): "))  # CUSTO FIXO
+    CV = float(input("Digite a comissão de vendas do produto (%): "))  # COMISSÃO DE VENDAS
+    ML = float(input("Digite a margem de lucro do produto (%): "))  # MARGEM DE LUCRO
 
-    query = "INSERT INTO produto (idProduto, nomeProduto, descProduto, precoProduto,impostoProduto, custoProduto, custoFixo, comissaoVendas, rentabilidadeProduto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)"
-    values = (cod, nome, descricao,PR,IV,CA, CF, CV, ML)
+    query = "INSERT INTO produto (idProduto, nomeProduto, descProduto, custoAquisicao impostoProduto,custoFixo, comissaoVendas, rentabilidadeProduto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)"
+    values = (cod, nome, descricao,CA,IV, CF, CV, ML)
 
     try:
         cursor.execute(query, values)
