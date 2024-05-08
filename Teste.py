@@ -27,11 +27,7 @@ def visualizarProdutos(cursor):
     resultados = cursor.fetchall()  # Obtendo todos os resultados
 
     # Cabeçalho para tabela de visualização de produtinhos
-<<<<<<< Updated upstream
     CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Custo de aquisição", "Imposto sobre produto", "Custo fixo", "Comissão", "Rentabilidade"] 
-=======
-    CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Quantidade", "Preço de Venda", "Imposto sobre produto", "Custo de aquisição", "Custo fixo", "Comissão", "Rentabilidade"] 
->>>>>>> Stashed changes
 
     # Tabulando dados do BD
     print("\n\nTABELA DE PRODUTOS:")
@@ -128,7 +124,7 @@ def adicionarProduto():
     CV = float(input("Digite a comissão de vendas do produto: "))  # COMISSÃO DE VENDAS
     ML = float(input("Digite a margem de lucro do produto: "))  # MARGEM DE LUCRO
 
-    query = "INSERT INTO produto (idProduto, nomeProduto, descProduto, precoProduto,impostoProduto,custoProduto, custoFixo, comissaoVendas, rentabilidadeProduto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)"
+    query = "INSERT INTO produto (idProduto, nomeProduto, descProduto, precoProduto,impostoProduto, custoProduto, custoFixo, comissaoVendas, rentabilidadeProduto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)"
     values = (cod, nome, descricao,PR,IV,CA, CF, CV, ML)
 
     try:
@@ -186,17 +182,10 @@ def menu():
         tabelaFuncoes = [
             ["1. ", "Visualizar produtos"],
             ["2. ", "Adicionar produtos"],
-<<<<<<< Updated upstream
             ["3. ", "Calcular preços"],
             ["4. ","Alterar produto"],
             ["5. ","Excluir produto"],
             ["6. ","Sair"],  
-=======
-            ["3. ", "Atualizar produtos"],
-            ["4. ", "Deletar produtos"],
-            ["5. ", "Calcular preços"],
-            ["6. ", "Sair"],  
->>>>>>> Stashed changes
         ]
         print(tabulate(tabelaFuncoes, headers=["Entrada", "Função"]))
         print()
@@ -222,7 +211,6 @@ def menu():
                 gerarRentabilidade(RT, PV) 
             else:
                 print("A função de exibição de resultados não será executada.")
-<<<<<<< Updated upstream
 
         elif opc==4:
             print("Em breve")
@@ -230,8 +218,6 @@ def menu():
         elif opc==5:
             excluirProduto()
 
-=======
->>>>>>> Stashed changes
         elif opc == 6:
             print("O programa encerrará em 10 segundos.")
             time.sleep(10)
