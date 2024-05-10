@@ -3,7 +3,7 @@ import time
 import mysql.connector
 from Color_Console import *
 
-# CONEXÃO COM O BANCO DE DADOS
+# CONEXÃO COM O BANCO DE DADOS, JÁ MODULADA
 db = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -22,12 +22,12 @@ def decisao_sim_nao(questao):
         else:
             print("Resposta inválida. Por favor, responda com 'S' ou 'N'.")
 
-def visualizarProdutos(cursor):
-    cursor.execute("SELECT `idProduto`, `nomeProduto`, `precoVenda`, `descProduto`, `custoAquisicao`, `impostoProduto`, `custoFixo`, `comissaoVendas`, `rentabilidadeProduto` FROM `produto`")  # Query 
+def visualizarProdutos():
+    cursor.execute("SELECT `idProduto`, `nomeProduto`, `descProduto`, `precoVenda`, `custoAquisicao`, `impostoProduto`, `custoFixo`, `comissaoVendas`, `rentabilidadeProduto` FROM `produto`")  # Query (TEM QUE ESTAR DE ACORDO COM O BANCO DE DADOS)
     resultados = cursor.fetchall()  # Obtendo todos os resultados
 
     # Cabeçalho para tabela de visualização de produtinhos
-    CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Preço de Venda", "Imposto sobre produto", "Custo de aquisição", "Custo fixo", "Comissão", "Rentabilidade"] 
+    CabecalhoProdutos = ["ID", "Nome do Produto", "Descrição", "Preço de Venda", "Imposto sobre produto", "Custo de aquisição", "Custo fixo", "Comissão", "Rentabilidade"] # TEM QUE ESTAR DE ACORDO COM QUERY
 
     # Tabulando dados do BD
     print("\n\nTABELA DE PRODUTOS:")
@@ -65,6 +65,9 @@ def visualizarProdutos(cursor):
 
             # Gerar classificação de rentabilidade
             gerarRentabilidade(RT, PV)
+    else: 
+        print()
+
 
 def calculadoraPreco():
     CA = float(input("Digite o custo do produto: "))  # CUSTO AQUISIÇÃO
@@ -114,6 +117,7 @@ def gerarRentabilidade(RT, PV):
     print()
     
 def adicionarProduto():
+
     cod=int(input("Digite o código do produto: "))
     nome=input("Digite o nome do produto: ")
     descricao=input("Digite a descrição do produto: ")
@@ -134,27 +138,34 @@ def adicionarProduto():
         print("Erro ao adicionar o produto:", err)
 
 def excluirProduto():
+    DecisaoExibir = "Deseja exibir os produtos antes de excluir?"
+    resposta = decisao_sim_nao(DecisaoExibir)
+
+    if resposta:
+        visualizarProdutos()
     cod = int(input("Digite o código do produto a ser excluído: "))
 
     cursor.execute("SELECT * FROM produto WHERE idProduto = %s", (cod,))
     produto = cursor.fetchone()
 
     if produto:
-        idProduto, nomeProduto, descricaoProduto, precoProduto, impostoProduto, custoProduto, custoFixo, comissaoVendas, rentabilidadeProduto = produto
+        idProduto, nomeProduto, descricaoProduto, custoAquisicao, impostoProduto, precoVenda, custoFixo, comissaoVendas, rentabilidadeProduto = produto
 
         print("\nProduto encontrado:")
         print(f"ID: {idProduto}")
         print(f"Nome: {nomeProduto}")
         print(f"Descrição: {descricaoProduto}")
-        print(f"Preço: R${precoProduto}")
+        print(f"Preço: R${precoVenda}")
         print(f"Imposto: {impostoProduto}%")
-        print(f"Custo: R${custoProduto}")
+        print(f"Custo: R${custoAquisicao}")
         print(f"Custo Fixo: {custoFixo}%")
         print(f"Comissão de Vendas: {comissaoVendas}%")
         print(f"Rentabilidade: {rentabilidadeProduto}%")
-           
-        questao = input("Deseja mesmo excluir o produto? (S/N): ").strip().lower()
-        if questao=='s':
+        
+        DecisaoExcluirPrdouto = "\nDeseja excluir o produto?\n"
+        resposta = decisao_sim_nao(DecisaoExcluirPrdouto)
+
+        if resposta:
             cursor.execute("DELETE FROM produto WHERE idProduto = %s", (cod,))
             db.commit()
             print("Produto excluído com sucesso!")
@@ -168,8 +179,6 @@ def excluirProduto():
 def atualizarProduto():
     print("Em breve")
 
-def deletarProduto():
-    print("Em breve")
 
 def menu():
     while True: 
@@ -181,9 +190,9 @@ def menu():
         tabelaFuncoes = [
             ["1. ", "Visualizar produtos"],
             ["2. ", "Adicionar produtos"],
-            ["3. ", "Calcular preços"],
-            ["4. ","Alterar produto"],
-            ["5. ","Excluir produto"],
+            ["3. ","Atualizar produto"],
+            ["4. ","Excluir produto"],
+            ["5. ", "Calcular preços"],
             ["6. ","Sair"],  
         ]
         print(tabulate(tabelaFuncoes, headers=["Entrada", "Função"]))
@@ -198,7 +207,7 @@ def menu():
         elif opc == 3:
             atualizarProduto()
         elif opc == 4:
-            deletarProduto()
+            excluirProduto()
         elif opc == 5:
             CA, CF, CV, IV, ML, PV, RB, OC, RT = calculadoraPreco()
 
