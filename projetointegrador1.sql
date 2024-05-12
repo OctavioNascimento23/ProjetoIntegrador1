@@ -1,4 +1,4 @@
--- phpMyAdmin SQL Dump
+ -- phpMyAdmin SQL Dump
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
@@ -25,28 +25,27 @@ SET time_zone = "+00:00";
 
 --
 -- Estrutura para tabela `produto`
---
 
 CREATE TABLE `produto` (
   `idProduto` int(4) NOT NULL,
   `nomeProduto` varchar(50) NOT NULL,
   `descProduto` varchar(150) NOT NULL,
-  `qtdProduto` int(4) NOT NULL,
-  `precoProduto` float(7,2) NOT NULL,
+  `precoVenda` float(7,2) NOT NULL,
+  `custoAquisicao` float(7,2) NOT NULL,
   `impostoProduto` float(4,2) NOT NULL,
-  `custoProduto` float(7,2) NOT NULL,
   `custoFixo` float(7,2) NOT NULL,
   `comissaoVendas` float(4,2) NOT NULL,
-  `rentabilidadeProduto` float(4,2) NOT NULL
+  `rentabilidadeProduto` float(4,2) NOT NULL,
+  PRIMARY KEY(`idProduto`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Despejando dados para a tabela `produto`
 --
 
-INSERT INTO `produto` (`idProduto`, `nomeProduto`, `descProduto`, `qtdProduto`, `precoProduto`, `impostoProduto`, `custoProduto`, `custoFixo`, `comissaoVendas`, `rentabilidadeProduto`) VALUES
-(4, 'Tênis1_teste', 'Descrição Tênis1_teste', 10, 0.00, 10.00, 75.00, 50.00, 5.00, 30.00),
-(8, 'Tênis2_teste', 'Descrição Tênis2_teste', 182, 0.00, 6.00, 214.00, 21.00, 4.00, 23.00);
+INSERT INTO `produto` (`idProduto`, `nomeProduto`, `descProduto`,`precoVenda`, `custoAquisicao`, `impostoProduto`, `custoFixo`, `comissaoVendas`, `rentabilidadeProduto`) VALUES
+(4, 'Tênis1_teste', 'Descrição Tênis1_teste', 0.00, 10.00, 75.00, 50.00, 5.00, 30.00),
+(8, 'Tênis2_teste', 'Descrição Tênis2_teste', 0.00, 6.00, 214.00, 21.00, 4.00, 23.00);
 
 --
 -- Índices para tabelas despejadas
@@ -55,8 +54,7 @@ INSERT INTO `produto` (`idProduto`, `nomeProduto`, `descProduto`, `qtdProduto`, 
 --
 -- Índices de tabela `produto`
 --
-ALTER TABLE `produto`
-  ADD PRIMARY KEY (`idProduto`);
+
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
