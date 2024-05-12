@@ -121,14 +121,15 @@ def adicionarProduto():
     cod=int(input("Digite o código do produto: "))
     nome=input("Digite o nome do produto: ")
     descricao=input("Digite a descrição do produto: ")
+    PV=float(input("Digite o valor de preço de venda (R$): "))
     CA=float(input("Digite o custo de aquisição (R$): "))
     IV = float(input("Digite os impostos do produto (%): "))  # IMPOSTOS SOBRE PRODUTO
     CF = float(input("Digite o custo fixo do produto (%): "))  # CUSTO FIXO
     CV = float(input("Digite a comissão de vendas do produto (%): "))  # COMISSÃO DE VENDAS
     ML = float(input("Digite a margem de lucro do produto (%): "))  # MARGEM DE LUCRO
 
-    query = "INSERT INTO produto (idProduto, nomeProduto, descProduto, custoAquisicao impostoProduto,custoFixo, comissaoVendas, rentabilidadeProduto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)"
-    values = (cod, nome, descricao,CA,IV, CF, CV, ML)
+    query = "INSERT INTO produto (idProduto, nomeProduto, descProduto, precoVenda, custoAquisicao, impostoProduto,custoFixo, comissaoVendas, rentabilidadeProduto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (cod, nome, descricao,PV,CA,IV, CF, CV, ML)
 
     try:
         cursor.execute(query, values)
@@ -181,56 +182,58 @@ def atualizarProduto():
 
 
 def menu():
-    while True: 
-        print("MENU do Controle de Estoque")
-        print()
-        print("Selecione uma função para prosseguir:")
-        print()
-        
-        tabelaFuncoes = [
+    try:
+        while True: 
+            print("MENU do Controle de Estoque")
+            print()
+            print("Selecione uma função para prosseguir:")
+            print()
+
+            tabelaFuncoes = [
             ["1. ", "Visualizar produtos"],
             ["2. ", "Adicionar produtos"],
             ["3. ","Atualizar produto"],
             ["4. ","Excluir produto"],
             ["5. ", "Calcular preços"],
             ["6. ","Sair"],  
-        ]
-        print(tabulate(tabelaFuncoes, headers=["Entrada", "Função"]))
-        print()
+            ]
+            print(tabulate(tabelaFuncoes, headers=["Entrada", "Função"]))
+            print()
 
-        opc = int(input("Selecione a função a ser executada: "))
-        print()
-        if opc == 1:
-            visualizarProdutos(cursor)
-        elif opc == 2:
-            adicionarProduto()
-        elif opc == 3:
-            atualizarProduto()
-        elif opc == 4:
-            excluirProduto()
-        elif opc == 5:
-            CA, CF, CV, IV, ML, PV, RB, OC, RT = calculadoraPreco()
+            opc = int(input("Selecione a função a ser executada: "))
+            print()
+            if opc == 1:
+                visualizarProdutos()
+            elif opc == 2:
+                adicionarProduto()
+            elif opc == 3:
+                atualizarProduto()
+            elif opc == 4:
+                excluirProduto()
+            elif opc == 5:
+                CA, CF, CV, IV, PV, OC, RT = calculadoraPreco()
 
-            DecisaoExibirTabela = "Deseja exibir os resultados?"
-            resposta = decisao_sim_nao(DecisaoExibirTabela) 
+                DecisaoExibirTabela = "Deseja exibir os resultados?"
+                resposta = decisao_sim_nao(DecisaoExibirTabela) 
 
-            if resposta:
-                gerarTabelaResultado(PV, CA, OC, RT, CF, CV, IV) 
-                gerarRentabilidade(RT, PV) 
+                if resposta:
+                    gerarTabelaResultado(PV, CA, OC, RT, CF, CV, IV) 
+                    gerarRentabilidade(RT, PV) 
+                else:
+                    print("A função de exibição de resultados não será executada.")
+
+            elif opc == 6:
+                print("O programa encerrará em 10 segundos.")
+                time.sleep(10)
+                break  # Sai do loop e encerra o programa
+
             else:
-                print("A função de exibição de resultados não será executada.")
+                print("Tente novamente, digite um número de 1 a 6!")
 
-        elif opc==4:
-            print("Em breve")
-
-        elif opc==5:
-            excluirProduto()
-
-        elif opc == 6:
-            print("O programa encerrará em 10 segundos.")
-            time.sleep(10)
-            break  # Sai do loop e encerra o programa
+    except ValueError:
+        print("Digite um opção válida!")
         
+    
         print()
         input("Aperte -Enter- para voltar ao início: ")
         #print("\033c", end='') apaga o código
