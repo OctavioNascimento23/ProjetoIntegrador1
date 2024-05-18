@@ -6,8 +6,10 @@ from Color_Console import *
 # CONEXÃO COM O BANCO DE DADOS, JÁ MODULADA
 db = mysql.connector.connect(
     host="localhost",
+    port=3307,
     user="root",
-    database="projetointegrador1" # Nome do BD
+    password="hoot",
+    database="projeto"
 )
 print(db)
 
@@ -61,7 +63,7 @@ def visualizarProdutos():
             print(f"ID do Produto: {idProduto}")
 
             # Gerar tabela de resultados
-            gerarTabelaResultado(PV, CA, OC, RT, CF, CV, IV)
+            gerarTabelaResultado(CA, CF, CV, IV, ML, PV, RB, OC, RT)
 
             # Gerar classificação de rentabilidade
             gerarRentabilidade(RT, PV)
@@ -83,16 +85,17 @@ def calculadoraPreco():
     # Retornando para usar nas próximas funções. 
     return CA, CF, CV, IV, ML, PV, RB, OC, RT
 
-def gerarTabelaResultado(PV, CA, OC, RT, CF, CV, IV):
+def gerarTabelaResultado(CA, CF, CV, IV, ML, PV, RB, OC, RT):
+
     tabelaResultados = [
-       ["A. Preço de Venda",f"R${round(PV,2)}","100.0%"],
-            ["B. Custo de aquisição",f"R${round(CA,2)}",f"{round(CA/PV*100,3)}"+"%"],
-            ["C. Receita Bruta",f"R${round(PV-CA,2)}",f"{round((PV-CA)/PV*100,3)}"+"%"],
-            ["D. Custo Fixo/Administrativo",f"R${round(CF*PV/100,2)}",f"{round(CF,3)}"+"%"],
-            ["E. Comissão de Vendas",f"R${round(CV*PV/100,2)}",f"{round(CV,3)}"+"%"],
-            ["F. Impostos",f"R${round(IV*PV/100,2)}",f"{round(IV,3)}"+"%"],
-            ["G. Outros Custos",f"R${round(OC,2)}",f"{round(OC/PV*100,3)}"+"%"],
-            ["H. Rentabilidade",f"R${round(RT,2)}",f"{round(RT/PV*100,3)}"+"%"]]
+        ["A. Preço de Venda",f"R${round(PV,2)}","100.0%"],
+        ["B. Custo de aquisição",f"R${round(CA,2)}",f"{round(CA/PV*100,3)}"+"%"],
+        ["C.  Receita Bruta",f"R${round(PV-CA,2)}",f"{round((PV-CA)/PV*100,3)}"+"%"],
+        ["D. Custo Fixo/Administrativo",f"R${round(CF*PV/100,2)}",f"{round(CF,3)}"+"%"],
+        ["E. Comissão de Vendas",f"R${round(CV*PV/100,2)}",f"{round(CV,3)}"+"%"],
+        ["F. Impostos",f"R${round(IV*PV/100,2)}",f"{round(IV,3)}"+"%"],
+        ["G. Outros Custos",f"R${round(OC,2)}",f"{round(OC/PV*100,3)}"+"%"],
+        ["H. Rentabilidade",f"R${round(RT,2)}",f"{round(RT/PV*100,3)}"+"%"]]
 
     print("\n\nTABELA DE RESULTADOS:")
     print()
@@ -121,18 +124,20 @@ def adicionarProduto():
     cod=int(input("Digite o código do produto: "))
     nome=input("Digite o nome do produto: ")
     descricao=input("Digite a descrição do produto: ")
+    PV=float(input("Digite o valor de preço de venda (R$): "))
     CA=float(input("Digite o custo de aquisição (R$): "))
     IV = float(input("Digite os impostos do produto (%): "))  # IMPOSTOS SOBRE PRODUTO
     CF = float(input("Digite o custo fixo do produto (%): "))  # CUSTO FIXO
     CV = float(input("Digite a comissão de vendas do produto (%): "))  # COMISSÃO DE VENDAS
     ML = float(input("Digite a margem de lucro do produto (%): "))  # MARGEM DE LUCRO
 
-    query = "INSERT INTO produto (idProduto, nomeProduto, descProduto, custoAquisicao impostoProduto,custoFixo, comissaoVendas, rentabilidadeProduto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)"
-    values = (cod, nome, descricao,CA,IV, CF, CV, ML)
+    query = "INSERT INTO produto (idProduto, nomeProduto, descProduto, precoVenda, custoAquisicao, impostoProduto,custoFixo, comissaoVendas, rentabilidadeProduto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (cod, nome, descricao,PV,CA,IV, CF, CV, ML)
 
     try:
         cursor.execute(query, values)
         db.commit()  # Confirmar a transação no banco de dados
+        print()
         print("Produto adicionado com sucesso!")
     except mysql.connector.Error as err:
         print("Erro ao adicionar o produto:", err)
@@ -177,61 +182,148 @@ def excluirProduto():
     
 
 def atualizarProduto():
-    print("Em breve")
+    cod = int(input("Deseja modificar um produto com qual código? "))
+    
+    # Verifica se o produto com o código fornecido existe no banco de dados
+    cursor.execute("SELECT * FROM produto WHERE idProduto = %s", (cod,)) #Seleciona o produto que possui o id digitado
+    produto = cursor.fetchone()
+    
+    if produto:
+        print("Produto encontrado:")
+        print("Cod:", produto[0])
+        print("Nome:", produto[1])
+        print("Descrição:", produto[2])
+        print("Preço:", produto[3])
+        print("Impostos - IV ", produto[4])
+        print("Custos - CA", produto[5])
+        print("Custo Fixo - CF", produto[6])
+        print("Comissão de Vendas - CV", produto[7])
+        print("Margem de Lucro - ML", produto[8])
+        print()
 
+
+        print("Opções de modificação:")
+        print("[1] Código")
+        print("[2] Nome")
+        print("[3] Descrição")
+        print("[4] Preço")
+        print("[5] Impostos/IV")
+        print("[6] Custo/CA")
+        print("[7] Custo Fixo/CF")
+        print("[8] Comissão de Vendas/CV")
+        print("[9] Margem de Lucro/ML")
+        print()
+
+        opcao = int(input("Escolha o número da opção que você gostaria de modificar: "))
+        print()
+        if opcao == 1:
+            novo_cod = int(input("Digite o novo código do produto: "))
+            print()
+            cursor.execute("UPDATE produto SET idProduto = %s WHERE idProduto = %s", (novo_cod, cod))
+            db.commit()
+            print("Código do produto atualizado com sucesso!")
+        elif opcao == 2:
+            novo_nome = input("Digite o novo nome do produto: ")
+            print()
+            cursor.execute("UPDATE produto SET nomeProduto = %s WHERE idProduto = %s", (novo_nome, cod))
+            db.commit()
+            print("Nome do produto atualizado com sucesso!")
+        elif opcao == 3:
+            nova_descricao = input("Digite a nova descrição do produto: ")
+            print()
+            cursor.execute("UPDATE produto SET descProduto = %s WHERE idProduto = %s", (nova_descricao, cod))
+            db.commit()
+            print("Descrição do produto atualizada com sucesso!")
+        elif opcao == 4:
+            novo_preco = float(input("Digite o novo preço do produto: "))
+            print()
+            cursor.execute("UPDATE produto SET precoVenda = %s WHERE idProduto = %s", (novo_preco, cod))
+            db.commit()
+            print("Preço do produto atualizado com sucesso!")
+        elif opcao == 5:
+            novos_impostos = float(input("Digite os novos impostos do produto: "))
+            print()
+            cursor.execute("UPDATE produto SET impostoProduto = %s WHERE idProduto = %s", (novos_impostos, cod))
+            db.commit()
+            print("Impostos do produto atualizados com sucesso!")
+        elif opcao == 6:
+            novo_custo = float(input("Digite o novo custo do produto: "))
+            print()
+            cursor.execute("UPDATE produto SET custoAquisicao = %s WHERE idProduto = %s", (novo_custo, cod))
+            db.commit()
+            print("Custo do produto atualizado com sucesso!")
+        elif opcao == 7:
+            novo_custo_fixo = float(input("Digite o novo custo fixo do produto: "))
+            print()
+            cursor.execute("UPDATE produto SET custoFixo = %s WHERE idProduto = %s", (novo_custo_fixo, cod))
+            db.commit()
+            print("Custo fixo do produto atualizado com sucesso!")
+        elif opcao == 8:
+            nova_comissao_vendas = float(input("Digite a nova comissão de vendas do produto: "))
+            print()
+            cursor.execute("UPDATE produto SET comissaoVendas = %s WHERE idProduto = %s", (nova_comissao_vendas, cod))
+            db.commit()
+            print("Comissão de vendas do produto atualizada com sucesso!")
+        elif opcao == 9:
+            nova_margem_lucro = float(input("Digite a nova margem de lucro do produto: "))
+            print()
+            cursor.execute("UPDATE produto SET rentabilidadeProduto = %s WHERE idProduto = %s", (nova_margem_lucro, cod))
+            db.commit()
+            print("Margem de lucro do produto atualizada com sucesso!")
+        else:
+            print("Opção inválida.")
+    else:
+        print("Produto com código", cod, "não encontrado.")
 
 def menu():
-    while True: 
-        print("MENU do Controle de Estoque")
-        print()
-        print("Selecione uma função para prosseguir:")
-        print()
-        
-        tabelaFuncoes = [
+        while True: 
+            print("MENU DO CONTROLE DE ESTOQUE")
+            print()
+            print("Selecione uma função para prosseguir:")
+            print()
+
+            tabelaFuncoes = [
             ["1. ", "Visualizar produtos"],
             ["2. ", "Adicionar produtos"],
             ["3. ","Atualizar produto"],
             ["4. ","Excluir produto"],
             ["5. ", "Calcular preços"],
             ["6. ","Sair"],  
-        ]
-        print(tabulate(tabelaFuncoes, headers=["Entrada", "Função"]))
-        print()
+            ]
+            print(tabulate(tabelaFuncoes, headers=["Opção", "Descrição"]))
+            print()
 
-        opc = int(input("Selecione a função a ser executada: "))
-        print()
-        if opc == 1:
-            visualizarProdutos(cursor)
-        elif opc == 2:
-            adicionarProduto()
-        elif opc == 3:
-            atualizarProduto()
-        elif opc == 4:
-            excluirProduto()
-        elif opc == 5:
-            CA, CF, CV, IV, ML, PV, RB, OC, RT = calculadoraPreco()
+            opc = int(input("Selecione a opção a ser executada: "))
+            print()
+            if opc == 1:
+                visualizarProdutos()
+            elif opc == 2:
+                adicionarProduto()
+            elif opc == 3:
+                atualizarProduto()
+            elif opc == 4:
+                excluirProduto()
+            elif opc == 5:
+                CA, CF, CV, IV, ML, PV, RB, OC, RT = calculadoraPreco()
+                DecisaoExibirTabela = "Deseja exibir os resultados?"
+                resposta = decisao_sim_nao(DecisaoExibirTabela) 
 
-            DecisaoExibirTabela = "Deseja exibir os resultados?"
-            resposta = decisao_sim_nao(DecisaoExibirTabela) 
+                if resposta:
+                    gerarTabelaResultado(PV, CA, OC, RT, CF, CV, IV,ML,RB) 
+                    gerarRentabilidade(RT, PV) 
+                else:
+                    print("A função de exibição de resultados não será executada.")
 
-            if resposta:
-                gerarTabelaResultado(PV, CA, OC, RT, CF, CV, IV) 
-                gerarRentabilidade(RT, PV) 
-            else:
-                print("A função de exibição de resultados não será executada.")
+            elif opc == 6:
+                DecisaoEncerrar = "Deseja realmente sair?"
+                resposta = decisao_sim_nao(DecisaoEncerrar)
+                if resposta:
+                    print("O programa encerrará em 10 segundos.")
+                    time.sleep(10)
+                    break 
+                else:
+                    menu() 
 
-        elif opc==4:
-            print("Em breve")
-
-        elif opc==5:
-            excluirProduto()
-
-        elif opc == 6:
-            print("O programa encerrará em 10 segundos.")
-            time.sleep(10)
-            break  # Sai do loop e encerra o programa
-        
-        print()
         input("Aperte -Enter- para voltar ao início: ")
         #print("\033c", end='') apaga o código
         print()
