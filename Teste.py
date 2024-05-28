@@ -6,9 +6,7 @@ from Color_Console import *
 # CONEXÃO COM O BANCO DE DADOS, JÁ MODULADA
 db = mysql.connector.connect(
     host="localhost",
-    port=3307,
     user="root",
-    password="hoot",
     database="projeto"
 )
 print(db)
