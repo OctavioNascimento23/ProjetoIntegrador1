@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Banco de dados: projetointegrador1
+-- Banco de dados: projeto
 --
 
 -- --------------------------------------------------------
@@ -45,8 +45,8 @@ CREATE TABLE produto (
 --
 
 INSERT INTO produto (idProduto, nomeProduto, descProduto, precoVenda, custoAquisicao, impostoProduto, custoFixo, comissaoVendas, rentabilidadeProduto) VALUES
-(4, 'Tênis1_teste', 'Descrição Tênis1_teste', 0.00, 10.00, 75.00, 50.00, 5.00, 30.00),
-(8, 'Tênis2_teste', 'Descrição Tênis2_teste', 0.00, 6.00, 214.00, 21.00, 4.00, 23.00);
+(1, 'ProdutoTeste', 'ProdutoTeste_1', 0.00, 10.00, 75.00, 50.00, 5.00, 30.00),
+(2, 'ProdutoTeste', 'ProdutoTeste_2', 0.00, 6.00, 214.00, 21.00, 4.00, 23.00);
 
 --
 -- Índices para tabelas despejadas
