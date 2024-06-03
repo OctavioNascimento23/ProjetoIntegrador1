@@ -36,10 +36,10 @@ def decisao_sim_nao(questao):  # Função para decisões de "Sim ou não"
 
 def visualizarProdutos():  # Função para visualização dos produtos
     try:
-        cursor.execute("SELECT `idProduto`, `nomeProduto`, `descProduto`, `precoVenda`, `custoAquisicao`, `impostoProduto`, `custoFixo`, `comissaoVendas`, `rentabilidadeProduto` FROM `produto`")
+        cursor.execute("SELECT idProduto, nomeProduto, descProduto, precoVenda, custoAquisicao, impostoProduto, custoFixo, comissaoVendas, rentabilidadeProduto FROM produto")
         resultados = cursor.fetchall()
 
-        CabecalhoProdutos = [Fore.RESET + "ID", "Nome do Produto", "Descrição", "Preço de Venda", "Imposto sobre produto", "Custo de aquisição", "Custo fixo", "Comissão", "Rentabilidade"]
+        CabecalhoProdutos = [Fore.RESET + "ID", "Nome do Produto", "Descrição", "Preço de Venda", "Custo de Aquisição", "Imposto sobre Produto", "Custo fixo", "Comissão", "Rentabilidade"]
 
         print(Fore.LIGHTCYAN_EX + "\nTabela de produtos:")
         print(Fore.RESET + tabulate(resultados, headers=CabecalhoProdutos, tablefmt="grid"))
@@ -53,71 +53,54 @@ def visualizarProdutos():  # Função para visualização dos produtos
             for produto in produtos:
                 idProduto, nomeProduto, PV, IV, CA, CF, CV, ML = produto
 
-                PV = CA / (1 - (CF + CV + IV + ML) / 100)
-                RB = PV - CA
-                OC = PV * (CF + CV + IV) / 100
-                RT = RB - OC
+                # Informações do produto
+                print(Fore.LIGHTYELLOW_EX + "\n" + "="*40)
+                print(Fore.LIGHTMAGENTA_EX + f"\nProduto: {nomeProduto}")
+                print(Fore.LIGHTMAGENTA_EX + f"ID do Produto: {idProduto}\n")
 
-                print()
-                print(Fore.LIGHTYELLOW_EX + "========================================")
-                print()
-                print(Fore.RESET + f"Produto: {nomeProduto}")
-                print(f"ID do Produto: {idProduto}")
-
-                gerarTabelaResultado(CA, CF, CV, IV, ML, PV, RB, OC, RT)
+                PV, RB, OC, RT = gerarTabelaResultado(idProduto, CA, CF, CV, IV, ML)  # Modificação aqui
                 gerarRentabilidade(RT, PV)
-        else:
+
             print()
     except mysql.connector.Error as err:
         print(Fore.LIGHTRED_EX + f"Erro ao consultar produtos: {err}\n")
 
-def calculadoraPreco():  # Função para cálculo de valor dos produtos
-    try:
-        CA = float(input(Fore.RESET + "\nDigite o custo do produto: "))
-        CF = float(input("Digite o custo fixo do produto: "))
-        CV = float(input("Digite a comissão de vendas do produto: "))
-        IV = float(input("Digite os impostos do produto: "))
-        ML = float(input("Digite a margem de lucro do produto: "))
-        
-        PV = CA / (1 - (CF + CV + IV + ML) / 100)
-        RB = PV - CA
-        OC = PV * (CF + CV + IV) / 100
-        RT = RB - OC
-
-        return CA, CF, CV, IV, ML, PV, RB, OC, RT
-    except ValueError:
-        print(Fore.LIGHTRED_EX + "Entrada inválida. Por favor, insira valores numéricos.")
-        return calculadoraPreco()
-
-def gerarTabelaResultado(CA, CF, CV, IV, ML, PV, RB, OC, RT):  # Função para gerar tabela de exibição dos produtos
+def gerarTabelaResultado(idProduto, CA, CF, CV, IV, ML):
+    PV = CA / (1 - (CF + CV + IV + ML) / 100)
+    RB = PV - CA
+    OC = PV * (CF + CV + IV) / 100
+    RT = RB - OC
+    
     tabelaResultados = [
         ["A. Preço de Venda", f"R${round(PV, 2)}", "100.0%"],
-        ["B. Custo de aquisição", f"R${round(CA, 2)}", f"{round(CA/PV*100, 3)}%"],
-        ["C. Receita Bruta", f"R${round(PV-CA, 2)}", f"{round((PV-CA)/PV*100, 3)}%"],
-        ["D. Custo Fixo/Administrativo", f"R${round(CF*PV/100, 2)}", f"{round(CF, 3)}%"],
-        ["E. Comissão de Vendas", f"R${round(CV*PV/100, 2)}", f"{round(CV, 3)}%"],
-        ["F. Impostos", f"R${round(IV*PV/100, 2)}", f"{round(IV, 3)}%"],
-        ["G. Outros Custos", f"R${round(OC, 2)}", f"{round(OC/PV*100, 3)}%"],
-        ["H. Rentabilidade", f"R${round(RT, 2)}", f"{round(RT/PV*100, 3)}%"]
+        ["B. Custo de aquisição", f"R${round(CA, 2)}", f"{round(CA/PV*100, 4)}%"],
+        ["C. Receita Bruta", f"R${round(RB, 2)}", f"{round((RB)/PV*100, 4)}%"],
+        ["D. Custo Fixo/Administrativo", f"R${round(OC, 2)}", f"{round(OC/PV*100, 4)}%"],
+        ["E. Comissão de Vendas", f"R${round(CV*PV/100, 2)}", f"{round(CV, 4)}%"],
+        ["F. Impostos", f"R${round(IV*PV/100, 2)}", f"{round(IV, 4)}%"],
+        ["G. Outros Custos", f"R${round(OC, 2)}", f"{round(OC/PV*100, 4)}%"],
+        ["H. Rentabilidade", f"R${round(RT, 2)}", f"{round(RT/PV*100, 4)}%"]
     ]
 
     print(Fore.LIGHTCYAN_EX + "\nTabela de resultados:")
     print(Fore.RESET + tabulate(tabelaResultados, headers=["Descrição", "Valor", "Porcentagem"]))
+
+    return PV, RB, OC, RT
 
 def gerarRentabilidade(RT, PV):  # Função para gerar tabela de rentabilidade dos produtos
     print(Fore.LIGHTCYAN_EX + "\nClassificação de rentabilidade:")
     rentabilidade = (RT / PV) * 100
 
     if rentabilidade > 20:
-        print(Fore.LIGHTGREEN_EX + f"Rentabilidade alta, com uma porcentagem de lucro de {rentabilidade}%")
+        print(Fore.LIGHTGREEN_EX + f"Rentabilidade alta, com uma porcentagem de lucro de {round(rentabilidade,2)}%")
     elif 10 < rentabilidade <= 20:
-        print(Fore.LIGHTYELLOW_EX + f"Rentabilidade média, com uma porcentagem de lucro de {rentabilidade}%")
+        print(Fore.LIGHTYELLOW_EX + f"Rentabilidade média, com uma porcentagem de lucro de {round(rentabilidade,2)}%")
     elif 0 < rentabilidade <= 10:
-        print(Fore.RESET + f"Rentabilidade baixa, com uma porcentagem de lucro de {rentabilidade}%")
+        print(Fore.LIGHTRED_EX + f"Rentabilidade baixa, com uma porcentagem de lucro de {round(rentabilidade,2)}%")
     elif rentabilidade == 0:
         print(Fore.LIGHTRED_EX + "Sem lucro")
     else:
-        print(Fore.LIGHTRED_EX + f"Prejuízo de {rentabilidade}%\n")
+        print(Fore.LIGHTRED_EX + f"Prejuízo de {round(rentabilidade,2)}%\n")
 
 def adicionarProduto():  # Função para adição dos produtos no banco de dados
     try:
@@ -150,16 +133,16 @@ def excluirProduto():  # Função para exclusão dos produtos no banco de dados
 
     try:
         cod = int(input("\nDigite o código do produto a ser excluído: "))
-        cursor.execute("SELECT * FROM produto WHERE idProduto = %s", (cod,))
+        cursor.execute("SELECT idProduto, nomeProduto, descProduto, precoVenda, impostoProduto, custoAquisicao, custoFixo, comissaoVendas, rentabilidadeProduto FROM produto WHERE idProduto = %s", (cod,))
         produto = cursor.fetchone()
 
         if produto:
-            idProduto, nomeProduto, descricaoProduto, custoAquisicao, impostoProduto, precoVenda, custoFixo, comissaoVendas, rentabilidadeProduto = produto
+            idProduto, nomeProduto, descProduto, precoVenda, impostoProduto, custoAquisicao, custoFixo, comissaoVendas, rentabilidadeProduto = produto
 
             print(Fore.LIGHTGREEN_EX + "\nProduto encontrado:")
-            print(Fore.RESET + f"ID: {idProduto}")
-            print(f"Nome: {nomeProduto}")
-            print(f"Descrição: {descricaoProduto}")
+            print(Fore.LIGHTMAGENTA_EX + f"ID: {idProduto}")
+            print(Fore.RESET + f"Nome: {nomeProduto}")
+            print(f"Descrição: {descProduto}")
             print(f"Preço: R${precoVenda}")
             print(f"Imposto: {impostoProduto}%")
             print(f"Custo: R${custoAquisicao}")
@@ -184,40 +167,40 @@ def excluirProduto():  # Função para exclusão dos produtos no banco de dados
 def atualizarProduto():  # Função para atualização dos produtos no banco de dados
     try:
         visualizarProdutos()
-        cod = int(input(Fore.RESET + "Deseja modificar um produto com qual código? "))
+        cod = int(input(Fore.RESET + "\nDeseja modificar um produto com qual código? "))
         
-        cursor.execute("SELECT * FROM produto WHERE idProduto = %s", (cod,))
+        cursor.execute("SELECT idProduto, nomeProduto, descProduto, precoVenda, custoAquisicao, impostoProduto, custoFixo, comissaoVendas, rentabilidadeProduto FROM produto WHERE idProduto = %s", (cod,))
         produto = cursor.fetchone()
 
         if produto:
-            idProduto, nomeProduto, descricaoProduto, precoVenda, custoAquisicao, impostoProduto, custoFixo, comissaoVendas, rentabilidadeProduto = produto
+            idProduto, nomeProduto, descProduto, precoVenda, custoAquisicao, impostoProduto, custoFixo, comissaoVendas, rentabilidadeProduto = produto
 
             print(Fore.LIGHTGREEN_EX + "\nProduto encontrado:")
-            print(Fore.RESET + f"ID: {idProduto}")
-            print(f"Nome: {nomeProduto}")
-            print(f"Descrição: {descricaoProduto}")
+            print(Fore.LIGHTMAGENTA_EX + f"ID: {idProduto}")
+            print(Fore.RESET + f"Nome: {nomeProduto}")
+            print(f"Descrição: {descProduto}")
             print(f"Preço: R${precoVenda}")
-            print(f"Imposto: {impostoProduto}%")
             print(f"Custo: R${custoAquisicao}")
+            print(f"Imposto: {impostoProduto}%")
             print(f"Custo Fixo: {custoFixo}%")
             print(f"Comissão de Vendas: {comissaoVendas}%")
             print(f"Rentabilidade: {rentabilidadeProduto}%")
 
             nome = input("Digite o novo nome do produto (deixe em branco para não alterar): ") or nomeProduto
-            descricao = input("Digite a nova descrição do produto (deixe em branco para não alterar): ") or descricaoProduto
-            PV = input(f"Digite o novo valor de preço de venda (R$) (atual: {precoVenda}): ")
+            descricao = input("Digite a nova descrição do produto (deixe em branco para não alterar): ") or descProduto
             CA = input(f"Digite o novo custo de aquisição (R$) (atual: {custoAquisicao}): ")
             IV = input(f"Digite os novos impostos do produto (%) (atual: {impostoProduto}): ")
             CF = input(f"Digite o novo custo fixo do produto (%) (atual: {custoFixo}): ")
             CV = input(f"Digite a nova comissão de vendas do produto (%) (atual: {comissaoVendas}): ")
             ML = input(f"Digite a nova margem de lucro do produto (%) (atual: {rentabilidadeProduto}): ")
 
-            PV = float(PV) if PV else precoVenda
             CA = float(CA) if CA else custoAquisicao
             IV = float(IV) if IV else impostoProduto
             CF = float(CF) if CF else custoFixo
             CV = float(CV) if CV else comissaoVendas
             ML = float(ML) if ML else rentabilidadeProduto
+
+            PV = CA / (1 - (CF + CV + IV + ML) / 100) # Recalculando o preço de venda
 
             query = "UPDATE produto SET nomeProduto = %s, descProduto = %s, precoVenda = %s, custoAquisicao = %s, impostoProduto = %s, custoFixo = %s, comissaoVendas = %s, rentabilidadeProduto = %s WHERE idProduto = %s"
             values = (nome, descricao, PV, CA, IV, CF, CV, ML, cod)
@@ -230,7 +213,7 @@ def atualizarProduto():  # Função para atualização dos produtos no banco de 
     except mysql.connector.Error as err:
         print(Fore.LIGHTRED_EX + f"Erro ao atualizar o produto: {err}")
     except ValueError:
-        print(Fore.LIGHTRED_EX + "Entrada inválida. Por favor, insira valores corretos.")
+        print(Fore.LIGHTRED_EX + "Entrada inválida. Por favor, insira valores numéricos.")
 
 def menu():  # Função responsável pela navegação do app
     while True:
@@ -241,7 +224,7 @@ def menu():  # Função responsável pela navegação do app
         print("######## INÍCIO ########")  # Melhor formatação do menu
         print("########################")  # Melhor formatação do menu
         print()
-        print(Fore.LIGHTCYAN_EX + Back.LIGHTMAGENTA_EX + "MENU DO CONTROLE DE ESTOQUE")
+        print(Fore.LIGHTCYAN_EX + "MENU DO CONTROLE DE ESTOQUE")
         print(Fore.LIGHTYELLOW_EX + "", "="*40)
         print(Fore.RESET + "Escolha uma das seguintes opções:")
         print("1 - Visualizar todos os produtos")
