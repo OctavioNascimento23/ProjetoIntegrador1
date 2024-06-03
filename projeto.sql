@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 18/04/2024 às 07:34
+-- Tempo de geração: 03/06/2024 às 02:47
 -- Versão do servidor: 10.4.25-MariaDB
 -- Versão do PHP: 7.4.30
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Banco de dados: `projetointegrador1`
+-- Banco de dados: `projeto`
 --
 
 -- --------------------------------------------------------
@@ -31,22 +31,22 @@ CREATE TABLE `produto` (
   `idProduto` int(4) NOT NULL,
   `nomeProduto` varchar(50) NOT NULL,
   `descProduto` varchar(150) NOT NULL,
-  `qtdProduto` int(4) NOT NULL,
-  `precoProduto` float(7,2) NOT NULL,
   `impostoProduto` float(4,2) NOT NULL,
-  `custoProduto` float(7,2) NOT NULL,
-  `custoFixo` float(7,2) NOT NULL,
+  `custoAquisicao` float(7,2) NOT NULL,
+  `custoFixo` float(4,2) NOT NULL,
   `comissaoVendas` float(4,2) NOT NULL,
-  `rentabilidadeProduto` float(4,2) NOT NULL
+  `rentabilidadeProduto` float(4,2) NOT NULL,
+  `precoVenda` float(7,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Despejando dados para a tabela `produto`
 --
 
-INSERT INTO `produto` (`idProduto`, `nomeProduto`, `descProduto`, `qtdProduto`, `precoProduto`, `impostoProduto`, `custoProduto`, `custoFixo`, `comissaoVendas`, `rentabilidadeProduto`) VALUES
-(4, 'Tênis1_teste', 'Descrição Tênis1_teste', 10, 0.00, 10.00, 75.00, 50.00, 5.00, 30.00),
-(8, 'Tênis2_teste', 'Descrição Tênis2_teste', 182, 0.00, 6.00, 214.00, 21.00, 4.00, 23.00);
+INSERT INTO `produto` (`idProduto`, `nomeProduto`, `descProduto`, `impostoProduto`, `custoAquisicao`, `custoFixo`, `comissaoVendas`, `rentabilidadeProduto`, `precoVenda`) VALUES
+(1, 'ProdutoTeste', 'ProdutoTeste_1', 10.00, 1500.00, 20.00, 1.00, 20.00, 3061.22),
+(2, 'ProdutoTeste2', 'ProdutoTeste_2', 10.50, 99.99, 2.50, 2.00, 20.20, 154.31),
+(3, 'PT3', 'PT3', 10.00, 150.00, 10.50, 1.50, 20.50, 260.87);
 
 --
 -- Índices para tabelas despejadas
@@ -66,7 +66,7 @@ ALTER TABLE `produto`
 -- AUTO_INCREMENT de tabela `produto`
 --
 ALTER TABLE `produto`
-  MODIFY `idProduto` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idProduto` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
