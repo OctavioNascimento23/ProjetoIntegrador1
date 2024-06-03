@@ -5,7 +5,7 @@ import sys
 
 init()  # Iniciando o colorama
 
-def connectBD():
+def connectBD(): # Função para conectar ao BD
     try:
         db = mysql.connector.connect(
             host="localhost",
@@ -19,10 +19,10 @@ def connectBD():
         print(Fore.LIGHTRED_EX + f"Erro ao conectar ao banco de dados: {err}")
         sys.exit(1)
 
-def closeBD(db, cursor):
+def closeBD(db, cursor): # Função para encerrar conexão com BD
     cursor.close()
     db.close()
-    print(Fore.LIGHTGREEN_EX + "Conexão com o banco de dados fechada.")
+    print(Fore.LIGHTGREEN_EX + "Conexão com o banco de dados fechada.\n")
 
 db, cursor = connectBD()
 
@@ -245,7 +245,8 @@ def menu():  # Função responsável pela navegação do app
             elif opcao == 4:
                 atualizarProduto()
             elif opcao == 5:
-                print("Saindo do programa...")
+                print("\033c", end='')  # Apaga o código acima
+                print("\nSaindo do programa...\n")
                 closeBD(db, cursor)  # Fecha a conexão com o banco de dados
                 break
             else:
